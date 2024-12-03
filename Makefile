@@ -11,10 +11,10 @@ OBJ_DIR = ./obj
 BIN_DIR = ./bin
 
 # Arquivos fonte
-SRC_FILES = $(SRC_DIR)/inimigo.cpp $(SRC_DIR)/torre.cpp $(SRC_DIR)/main.cpp
+SRC_FILES = $(SRC_DIR)/inimigo.cpp $(SRC_DIR)/torre.cpp $(SRC_DIR)/main.cpp $(SRC_DIR)/graphics.cpp $(SRC_DIR)/game.cpp
 
 # Arquivos objeto
-OBJ_FILES = $(OBJ_DIR)/inimigo.o $(OBJ_DIR)/torre.o $(OBJ_DIR)/main.o
+OBJ_FILES = $(OBJ_DIR)/inimigo.o $(OBJ_DIR)/torre.o $(OBJ_DIR)/main.o $(OBJ_DIR)/graphics.o $(OBJ_DIR)/game.o
 
 # Nome do executável
 EXEC = $(BIN_DIR)/jogo
@@ -43,6 +43,8 @@ run: $(EXEC)
 # Definindo as dependências dos arquivos objeto
 $(OBJ_DIR)/inimigo.o: $(SRC_DIR)/inimigo.cpp $(SRC_DIR)/inimigo.h
 $(OBJ_DIR)/torre.o: $(SRC_DIR)/torre.cpp $(SRC_DIR)/torre.h
+$(OBJ_DIR)/graphics.o: $(SRC_DIR)/graphics.cpp $(SRC_DIR)/graphics.h
+$(OBJ_DIR)/game.o: $(SRC_DIR)/game.cpp $(SRC_DIR)/game.h
 $(OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp $(SRC_DIR)/inimigo.h $(SRC_DIR)/torre.h
 
 .PHONY: all clean run
