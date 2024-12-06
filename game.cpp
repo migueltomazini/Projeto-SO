@@ -5,36 +5,53 @@ using namespace std;
 #define windowWidth 600
 #define windowHeight 600
 
-// Semáforos
-semaphore mutexInimigo1HP = 1;
-semaphore mutexInimigo2HP = 1;
+bool jogo_rodando;
 
-// Criação dos inimigos
-Inimigo inimigo1(-1.0f, 0.5f, 1000, 0.05f, 0.05f);
-Inimigo inimigo2(-1.0f, -0.5f, 1000, 0.05f, 0.05f);
+// Semáforo binário
+binary_semaphore mutexInimigoHP(1); // Inicializado com 1
 
-// Criando torres
-Torre torre1(-0.2, 0.75, 0.5, 0.12);
-Torre torre2(0.2, 0.75, 0.5, 0.12);
-Torre torre3(0, -0.75, 0.5, 0.12);
+// Criação do inimigo
+Inimigo inimigo(-1.0f, 0.0f, 1000, 0.01f, 0.05f); // Movimento apenas horizontal
 
-// Função para decrementar o semáforo
-void down(semaphore *s) {
-    while (*s <= 0) {
-        usleep(100); // Evita consumir 100% da CPU
+// Vetor de torres
+vector<Torre> torres; 
+const int maxTorres = 3;
+
+// Distância mínima entre a torre e a linha do inimigo
+const float distanciaMinima = 0.2f;
+
+EstadoJogo estadoAtual = MENU;
+
+void mouseFunc(int button, int state, int x, int y) {
+    if (estadoAtual == MENU && button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && torres.size() < maxTorres) {
+        float posX = (float)x / windowWidth * 2.0f - 1.0f;
+        float posY = 1.0f - (float)y / windowHeight * 2.0f;
+
+        // Verifica se a torre está longe o suficiente da linha do inimigo
+        if (abs(posY - 0.0f) >= distanciaMinima) {
+            torres.push_back(Torre(posX, posY, 0.5, 0.12));
+        } else {
+            cout << "Torre muito próxima da linha do inimigo! Escolha outro local.\n";
+        }
     }
-    __sync_fetch_and_sub(s, 1); // Decrementa o semáforo de forma atômica
 }
 
-// Função para incrementar o semáforo
-void up(semaphore *s) {
-    __sync_fetch_and_add(s, 1); // Incrementa o semáforo de forma atômica
+void teclado(unsigned char key, int x, int y) {
+    if (estadoAtual == MENU && key == 's') {
+        estadoAtual = JOGANDO;
+        jogo_rodando = true;
+        inicializar_threads();
+    } else if (estadoAtual == GAME_OVER && key == 'r') {
+        jogo_rodando = true;
+        estadoAtual = MENU;
+        torres.clear();
+        inimigo.resetar(); // Reinicia o inimigo
+    }
 }
-
 
 // Função da torre executada pelas threads
-void torre_func(Torre* torre, Inimigo* inimigo, semaphore* mutex) {
-    while (true) {
+void torre_func(Torre* torre, Inimigo* inimigo) {
+    while (jogo_rodando) {
         // Calcula distância entre a torre e o inimigo
         float dx = inimigo->getX() - torre->getX();
         float dy = inimigo->getY() - torre->getY();
@@ -42,107 +59,83 @@ void torre_func(Torre* torre, Inimigo* inimigo, semaphore* mutex) {
 
         // Verifica se o inimigo está no raio de ataque e está vivo
         if (distancia <= torre->getRadius() * torre->getRadius() && inimigo->isAlive()) {
-            down(mutex); // Bloqueia acesso à vida do inimigo
-            inimigo->aplicaDano(DANO); // Aplica o dano
+            mutexInimigoHP.acquire(); // Bloqueia acesso à vida do inimigo
+            inimigo->aplicaDano(DANO); 
             cout << "Torre em (" << torre->getX() << ", " << torre->getY() 
                  << ") atacou o inimigo. Vida restante: " << inimigo->getHealth() << endl;
-            up(mutex); // Libera acesso
-            usleep(100000); // Espera antes de atacar novamente
+            mutexInimigoHP.release(); // Libera acesso
+            usleep(100000);
         }
     }
 }
 
-void desenha_texto(void) {
-    for (int i = 1; i <= NUM_INIMIGOS; i++) {
-        char vidaTexto[50];
-        if (i == 1) sprintf(vidaTexto, "Inimigo %d: %d", i, inimigo1.getHealth());  // gambs para corrigir depois
-        else sprintf(vidaTexto, "Inimigo %d: %d", i, inimigo2.getHealth());
-        glRasterPos2f(-0.9f, 0.3f - 0.2f * i); // Posiciona os textos na tela
-        for (char *c = vidaTexto; *c != '\0'; c++) {
-            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
-        }
-    }
-}
-
-
-//------------------ Draw -----------------//
+// Função de renderização
 void draw() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    desenha_circunferencia(torre1.getX(), torre1.getY(), torre1.getRadius());
-    desenha_circunferencia(torre2.getX(), torre2.getY(), torre2.getRadius());
-    desenha_circunferencia(torre3.getX(), torre3.getY(), torre3.getRadius());
+    if (estadoAtual == MENU) {
+        // Desenha a linha horizontal do caminho do inimigo
+        desenha_linha(-1.0f, 0.0f, 1.0f, 0.0f);
 
-    desenha_linha(-1.0, 0.5, 1.0, 0.5);
-    desenha_linha(-1.0, -0.5, 1.0, -0.5);
+        // Desenha linhas que demarcam área onde pode ser colocada uma torre
+        desenha_linha(-1.0f, 0.2f, 1.0f, 0.2f);
+        desenha_linha(-1.0f, -0.2f, 1.0f, -0.2f);
 
-    if (inimigo1.isAlive()) // Usando método isAlive(), se existir.
-        desenha_circulo(inimigo1.getX(), inimigo1.getY(), inimigo1.getRadius());
-    if (inimigo2.isAlive()) // Usando método isAlive(), se existir.
-        desenha_circulo(inimigo2.getX(), inimigo2.getY(), inimigo2.getRadius());
+        for (auto& torre : torres) {
+            desenha_circunferencia(torre.getX(), torre.getY(), torre.getRadius());
+            desenha_triangulo(torre.getX(), torre.getY(), torre.getTamanho());
+        }
+        desenha_texto_na_tela("Clique para posicionar as torres (no maximo 3).", -0.9f, 0.9f);
+        desenha_texto_na_tela("As torres nao podem estar entre as linhas.", -0.9f, 0.8f);
+        desenha_texto_na_tela("Pressione 'S' para comecar.", -0.9f, 0.7f);
+    } else if (estadoAtual == JOGANDO) {
+        // Desenha a linha horizontal
+        desenha_linha(-1.0f, 0.0f, 1.0f, 0.0f);
 
-    desenha_texto();
+        // Desenha torres
+        for (auto& torre : torres) {
+            desenha_circunferencia(torre.getX(), torre.getY(), torre.getRadius());
+            desenha_triangulo(torre.getX(), torre.getY(), torre.getTamanho());
+        }
 
-    desenha_triangulo(torre1.getX(), torre1.getY(), torre1.getTamanho());
-    desenha_triangulo(torre2.getX(), torre2.getY(), torre2.getTamanho());
-    desenha_triangulo(torre3.getX(), torre3.getY(), torre3.getTamanho());
+        // Desenha o inimigo
+        if (inimigo.isAlive()) {
+            desenha_circulo(inimigo.getX(), inimigo.getY(), inimigo.getRadius());
+        }
 
-    glLineWidth(20.0f);  // Define a espessura da linha
-    glColor3f(1.0, 0.6, 0.0);
-    if (inimigo1.isAlive() && (inimigo1.getX() - torre1.getX())*(inimigo1.getX() - torre1.getX()) + (inimigo1.getY() - torre1.getY())*(inimigo1.getY() - torre1.getY()) <= 0.25) {
-        // glutTimerFunc(intervalo, inimigo1.aplicaDano(dano), 1);
+        string vidaInimigoTexto = "Vida do inimigo: " + to_string(inimigo.getHealth());
+        desenha_texto_na_tela(vidaInimigoTexto.c_str(), -0.9f, -0.9f);
 
-        glBegin(GL_LINE_STRIP);
-            glVertex2d(torre1.getX(), torre1.getY());
-            glVertex2d(inimigo1.getX(), inimigo1.getY());
-        glEnd();
+    } else if (estadoAtual == GAME_OVER) {
+        jogo_rodando = false;
+
+        if (!inimigo.isAlive()) {
+            desenha_texto_na_tela("Voce venceu! Pressione R para reiniciar.", -0.5f, 0.0f);
+        } else {
+            desenha_texto_na_tela("GAME OVER! Pressione R para reiniciar.", -0.5f, 0.0f);
+        }
     }
-
-
-    if (inimigo1.isAlive() && (inimigo1.getX() - torre2.getX())*(inimigo1.getX() - torre2.getX()) + (inimigo1.getY() - torre2.getY())*(inimigo1.getY() - torre2.getY()) <= 0.25) {
-        // glutTimerFunc(intervalo, inimigo1.aplicaDano(dano), 1);
-
-        glBegin(GL_LINE_STRIP);
-            glVertex2d(torre2.getX(), torre2.getY());
-            glVertex2d(inimigo1.getX(), inimigo1.getY());
-        glEnd();
-    }
-
-    if (inimigo2.isAlive() && (inimigo2.getX() - torre3.getX())*(inimigo2.getX() - torre3.getX()) + (inimigo2.getY() - torre3.getY())*(inimigo2.getY() - torre3.getY()) <= 0.25) {
-        // glutTimerFunc(intervalo, inimigo2.aplicaDano(dano), 2);
-
-        glBegin(GL_LINE_STRIP);
-            glVertex2d(torre3.getX(), torre3.getY());
-            glVertex2d(inimigo2.getX(), inimigo2.getY());
-        glEnd();
-    }
-
-    glLineWidth(0.01f);  // Define a espessura da linha
 
     glutSwapBuffers();
 }
 
+void timer(int) {
+    if (estadoAtual == JOGANDO) {
+        inimigo.mover();
 
-//------------------ Timer -----------------//
-void timer(int){
-  // Essa função é chamada em loop, é aqui que realizaremos as animações
-
-  inimigo1.mover();
-  inimigo2.mover();
-
-  // Executa a função draw para desenhar novamente
-  glutPostRedisplay();
-
-  // O primeiro parâmetro define de quanto em quanto tempo em milissegundos timer será chaamdo
-  // Eu coloquei 1000/60 para definir que vai atualizar a 60hz
-  glutTimerFunc(1000/60, timer, 0);// Garante que esta função será chamada de novo
+        if (inimigo.getX() > 1.0f || !inimigo.isAlive()) {
+            estadoAtual = GAME_OVER;
+        }
+    }
+    glutPostRedisplay();
+    glutTimerFunc(1000 / 60, timer, 0);
 }
 
 void inicializar_threads(){
     // Criação de threads para cada torre
-    thread torre1Thread(torre_func, &torre1, &inimigo1, &mutexInimigo1HP);
-    thread torre2Thread(torre_func, &torre2, &inimigo1, &mutexInimigo1HP);
-    thread torre3Thread(torre_func, &torre3, &inimigo2, &mutexInimigo2HP);
+    thread torre1Thread(torre_func, &torres[0], &inimigo);
+    thread torre2Thread(torre_func, &torres[1], &inimigo);
+    thread torre3Thread(torre_func, &torres[2], &inimigo);
 
     // Separa as threads de cada torre da thread principal para execução concorrente
     torre1Thread.detach();
@@ -150,8 +143,10 @@ void inicializar_threads(){
     torre3Thread.detach();
 }
 
-void executar_loop(){
+void executar_loop() {
     glutDisplayFunc(draw);
-    glutTimerFunc(0, timer, 0); // Define função de loop
+    glutTimerFunc(0, timer, 0);
+    glutMouseFunc(mouseFunc);
+    glutKeyboardFunc(teclado);
     glutMainLoop();
 }

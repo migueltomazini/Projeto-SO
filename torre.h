@@ -3,7 +3,7 @@
 
 #include "inimigo.h"
 #include <bits/stdc++.h>
-#define DANO 10
+#define DANO 15
 
 class Torre {
 private:

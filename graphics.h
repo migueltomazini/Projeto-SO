@@ -10,6 +10,7 @@
     void desenha_circunferencia(float x, float y, float raio);
     void desenha_triangulo(float x, float y, float raio);
     void desenha_linha(float x1, float y1, float x2, float y2);
+    void desenha_texto_na_tela(const char* texto, float x, float y);
     void configurar_interface(int argc, char** argv);
 
 #endif

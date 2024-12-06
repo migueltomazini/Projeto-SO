@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include  "game.h"
 
 void desenha_circulo(float x, float y, float raio){
     glColor3f(1.0, 0.0, 0.0);
@@ -36,11 +37,27 @@ void desenha_linha(float x1, float y1, float x2, float y2){
     glEnd();
 }
 
-void configurar_interface(int argc, char** argv){
+// Desenha texto na tela
+void desenha_texto_na_tela(const char* texto, float x, float y) {
+    glColor3f(0.0, 0.0, 0.0);
+    glRasterPos2f(x, y);
+    for (const char* c = texto; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+    }
+}
+
+void configurar_interface(int argc, char** argv) {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(windowWidth, windowHeight);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Tower Defense com Threads e Semáforos");
+
     glClearColor(1.0, 1.0, 1.0, 1.0);
+
+    glutDisplayFunc(draw);
+    glutMouseFunc(mouseFunc);
+    glutKeyboardFunc(teclado);
+    glutTimerFunc(0, timer, 0);
 }
+

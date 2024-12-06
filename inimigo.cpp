@@ -59,3 +59,9 @@ void Inimigo::kills() {
     alive = false; // Define o inimigo como morto
 }
 
+void Inimigo::resetar() {
+    x = -1.0f;
+    y = 0.0f;
+    health = 1000;
+    alive = true;
+}

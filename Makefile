@@ -1,6 +1,6 @@
 # Definindo o compilador e as flags de compilação
 CXX = g++
-CXXFLAGS = -Wall -std=c++11 -I/usr/include/GL
+CXXFLAGS = -Wall -std=c++20 -I/usr/include/GL
 
 # Flags para linkar com as bibliotecas GLUT e OpenGL
 LDFLAGS = -lGL -lGLU -lglut

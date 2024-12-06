@@ -22,6 +22,7 @@ public:
     void mover();
     void aplicaDano(int dano);
     void kills();
+    void resetar();
 };
 
 #endif // INIMIGO_H

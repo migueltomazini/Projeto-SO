@@ -3,12 +3,9 @@
 using namespace std;
 
 int main(int argc, char** argv) {
+    configurar_interface(argc, argv); // Configura janela e gráficos
 
-    configurar_interface(argc, argv);
-
-    inicializar_threads();
-
-    executar_loop();
+    executar_loop(); // Executa o loop principal do GLUT
 
     return 0;
 }
