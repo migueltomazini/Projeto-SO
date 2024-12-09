@@ -1,3 +1,11 @@
+/*
+Autores:
+Bruno Basckeira Chinaglia - 14562233
+Giordano Santorum Lorenzetto - 14574017
+Miguel Tomazini Rodrigues - 14599300
+Victor Moreli dos Santos - 14610514
+*/
+
 #include "inimigo.h"
 #include <cmath>
 using namespace std;
@@ -59,6 +67,7 @@ void Inimigo::kills() {
     alive = false; // Define o inimigo como morto
 }
 
+// Método para resetar inimigo
 void Inimigo::resetar() {
     x = -1.0f;
     y = 0.0f;

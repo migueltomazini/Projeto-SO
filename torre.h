@@ -1,9 +1,19 @@
+/*
+Autores:
+Bruno Basckeira Chinaglia - 14562233
+Giordano Santorum Lorenzetto - 14574017
+Miguel Tomazini Rodrigues - 14599300
+Victor Moreli dos Santos - 14610514
+*/
+
 #ifndef TOWER_H
 #define TOWER_H
 
+// Define as torres que serão posicionadas pelos usuários
+
 #include "inimigo.h"
 #include <bits/stdc++.h>
-#define DANO 15
+#define DANO 15 // Dano aplicado pelas torres
 
 class Torre {
 private:

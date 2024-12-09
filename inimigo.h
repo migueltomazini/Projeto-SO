@@ -1,7 +1,17 @@
+/*
+Autores:
+Bruno Basckeira Chinaglia - 14562233
+Giordano Santorum Lorenzetto - 14574017
+Miguel Tomazini Rodrigues - 14599300
+Victor Moreli dos Santos - 14610514
+*/
+
 #ifndef INIMIGO_H
 #define INIMIGO_H
 
-#define NUM_INIMIGOS 2
+// Deine o inimigo do jogo
+
+#define NUM_INIMIGOS 1
 class Inimigo {
 private:
     float x, y;

@@ -1,7 +1,17 @@
+/*
+Autores:
+Bruno Basckeira Chinaglia - 14562233
+Giordano Santorum Lorenzetto - 14574017
+Miguel Tomazini Rodrigues - 14599300
+Victor Moreli dos Santos - 14610514
+*/
+
 #ifndef GRAPHICS_H
     #define GRAPHICS_H
     #define windowWidth 600
     #define windowHeight 600
+
+    // Define as funções relacionadas a interface gráfica
 
     #include <GL/glut.h>
     #include <math.h>

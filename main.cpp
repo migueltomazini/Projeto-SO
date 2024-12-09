@@ -1,3 +1,11 @@
+/*
+Autores:
+Bruno Basckeira Chinaglia - 14562233
+Giordano Santorum Lorenzetto - 14574017
+Miguel Tomazini Rodrigues - 14599300
+Victor Moreli dos Santos - 14610514
+*/
+
 #include "game.h"
 
 using namespace std;

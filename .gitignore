@@ -1,0 +1,11 @@
+# Ignorar diretórios bin e obj
+bin/
+obj/
+
+# Ignorar configurações do Visual Studio Code
+.vscode/
+
+# Ignorar arquivos executáveis (extensão para Windows, Linux e MacOS)
+*.exe
+*.out
+*.app
