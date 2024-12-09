@@ -37,6 +37,7 @@ sudo apt-get install libglfw3-dev
 sudo apt-get install mesa-utils  
 ```
 ```bash
-make
+make all
 make run
 ```
+Há também o comando make clean para excluir os objetos e o executável criado.
