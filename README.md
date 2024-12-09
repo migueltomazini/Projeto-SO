@@ -4,7 +4,7 @@ Este projeto foi desenvolvido com o objetivo de implementar uma simulação util
 
 ## Visão Geral da Simulação
 
-A simulação apresenta duas situações: na primeira, o inimigo é atacado por uma única torre; na segunda, ele é atacado por duas torres simultaneamente, com uma região de sobreposição. Nessa região, os danos causados por ambas as torres são combinados, resultando em um ataque mais poderoso.
+A simulação consiste em um cenário onde o jogador controla o posicionamento de **três torres** com o objetivo de eliminar um inimigo em movimento. As torres causam dano ao inimigo sempre que ele entra em seu raio de ataque.  
 
 - A **saúde do inimigo** é definida como a **região crítica**, sendo acessada exclusivamente através de semáforos para garantir a integridade dos dados.  
 - A biblioteca **OpenGL** foi utilizada para criar a interface gráfica da simulação.  
@@ -20,7 +20,8 @@ A simulação apresenta duas situações: na primeira, o inimigo é atacado por 
 - **Controle de Concorrência:** Eles evitam condições de corrida, garantindo que os ataques sejam tratados de forma sincronizada e consistente.  
 
 ## Funcionalidades  
-- **Simulação Dinâmica:** A interface visual, implementada em OpenGL, exibe as torres atacando o inimigo em tempo real.  
+- **Simulação Dinâmica:** A interface visual, implementada em OpenGL, exibe as torres atacando o inimigo em tempo real.
+- **Interatividade:** O jogador pode selecionar estrategicamente o posicionamento das torres para maximizar o dano.  
 - **Sincronização Segura:** O uso de semáforos protege a região crítica da saúde do inimigo, assegurando a integridade dos dados em um ambiente multithread.  
 - **Escalabilidade:** A arquitetura permite expandir a simulação para incluir mais torres ou inimigos, destacando a flexibilidade do design concorrente.  
 
