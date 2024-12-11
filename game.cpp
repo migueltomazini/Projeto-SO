@@ -13,8 +13,13 @@ using namespace std;
 #define windowWidth 600
 #define windowHeight 600
 
-// Semáforo binário
+// Semáforos binários
+
+// Semáforo para controle de acesso a vida do inimigo
 binary_semaphore mutexInimigoHP(1); // Inicializado com 1
+
+// Semáforo para controle de acesso as coordenadas do inimigo
+binary_semaphore mutexInimigoCoord(1); // Inicializado com 1
 
 // Criação do inimigo
 Inimigo inimigo(-1.0f, 0.0f, VIDA, 0.01f, 0.05f); // Movimento apenas horizontal
@@ -60,18 +65,24 @@ void teclado(unsigned char key, int x, int y) {
 void torre_func(Torre* torre, Inimigo* inimigo) {
     while (estadoAtual == JOGANDO) {
         // Calcula distância entre a torre e o inimigo
+
+        mutexInimigoCoord.acquire();
         float dx = inimigo->getX() - torre->getX();
         float dy = inimigo->getY() - torre->getY();
+        mutexInimigoCoord.release();
+
         float distancia = dx * dx + dy * dy;
 
         // Verifica se o inimigo está no raio de ataque e está vivo
-        if (distancia <= torre->getRadius() * torre->getRadius() && inimigo->isAlive()) {
+        if (distancia <= (torre->getRadius() * torre->getRadius()) && inimigo->isAlive()) {
             mutexInimigoHP.acquire(); // Bloqueia acesso à vida do inimigo
             inimigo->aplicaDano(DANO); // Região Crítica
             mutexInimigoHP.release(); // Libera acesso
             usleep(100000);
         }
     }
+
+    cout << "thread terminada" << endl;
 }
 
 // Função de renderização
@@ -131,7 +142,11 @@ void draw() {
         }
 
         // Escreve na tela vida do inimigo
+        // Semaforo protege tambem a operacao de leitura da vida
+        mutexInimigoHP.acquire(); // Bloqueia acesso à vida do inimigo
         string vidaInimigoTexto = "Vida do inimigo: " + to_string(inimigo.getHealth());
+        mutexInimigoHP.release(); // Libera acesso
+
         desenha_texto_na_tela(vidaInimigoTexto.c_str(), -0.9f, -0.9f);
 
     } else if (estadoAtual == GAME_OVER) {  // Se o jogo terminou (jogador ganhou ou perdeu)
@@ -148,7 +163,9 @@ void draw() {
 
 void timer(int) {
     if (estadoAtual == JOGANDO) {
+        mutexInimigoCoord.acquire();
         inimigo.mover();    // move inimigo
+        mutexInimigoCoord.release();
 
         if (inimigo.getX() > 1.0f || !inimigo.isAlive()) {  // se inimigo chegou ao fim da tela ou se morreu
             estadoAtual = GAME_OVER;    // jogo terminou
@@ -161,15 +178,33 @@ void timer(int) {
 // Função que inicializa threads
 void inicializar_threads(){
     // Criação de threads para cada torre
-    thread torre1Thread(torre_func, &torres[0], &inimigo);
-    thread torre2Thread(torre_func, &torres[1], &inimigo);
-    thread torre3Thread(torre_func, &torres[2], &inimigo);
+    int quant_torres = torres.size();
 
-    // Separa as threads de cada torre da thread principal para execução concorrente
-    torre1Thread.detach();
-    torre2Thread.detach();
-    torre3Thread.detach();
+    // Inicializa a quantidade de threads de acordo com o número de torres posicionadas
+    if(quant_torres == 1){
+        thread torre1Thread(torre_func, &torres[0], &inimigo);
+
+        torre1Thread.detach();
+
+    } else if(quant_torres == 2) {
+        thread torre1Thread(torre_func, &torres[0], &inimigo);
+        thread torre2Thread(torre_func, &torres[1], &inimigo);
+
+        torre1Thread.detach();
+        torre2Thread.detach();
+
+    } else if(quant_torres == 3) {
+        thread torre1Thread(torre_func, &torres[0], &inimigo);
+        thread torre2Thread(torre_func, &torres[1], &inimigo);
+        thread torre3Thread(torre_func, &torres[2], &inimigo);
+
+        torre1Thread.detach();
+        torre2Thread.detach();
+        torre3Thread.detach();
+
+    }
 }
+
 
 // Loop do jogo
 void executar_loop() {

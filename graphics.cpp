@@ -59,7 +59,7 @@ void configurar_interface(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(windowWidth, windowHeight);
     glutInitWindowPosition(0, 0);
-    glutCreateWindow("Tower Defense com Threads e Semáforos");
+    glutCreateWindow("Tower Defense com Threads e Semaforos");
 
     glClearColor(1.0, 1.0, 1.0, 1.0);
 
