@@ -47,7 +47,7 @@ A simulação consiste em um cenário onde o jogador controla o posicionamento d
   make all
   make run
   ```
-Comando ```bash make clean ``` também está disponível para excluir objetos e executável.
+Comando ``` make clean ``` também está disponível para excluir objetos e executável.
 
 ### Windows
 
