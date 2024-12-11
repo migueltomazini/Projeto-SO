@@ -1,12 +1,14 @@
-# Simulação: Tower Defense
+# Jogo: Tower Defense
 
 Este projeto foi desenvolvido com o objetivo de implementar uma simulação utilizando threads e semáforos, como parte da disciplina **Sistemas Operacionais I (SSC0140)** ministrada por **Kalinka Regina Lucas Jaquie Castelo Branco** na Universidade de São Paulo (USP).  
 
-## Visão Geral da Simulação
+## Visão Geral do Jogo
 
-A simulação consiste em um cenário onde o jogador controla o posicionamento de **três torres** com o objetivo de eliminar um inimigo em movimento. As torres causam dano ao inimigo sempre que ele entra em seu raio de ataque.  
+A simulação consiste em um cenário onde o jogador controla o posicionamento de até **três torres** com o objetivo de eliminar um inimigo em movimento. As torres causam dano ao inimigo sempre que ele entra em seu raio de ataque.  
 
-- A **saúde do inimigo** é definida como a **região crítica**, sendo acessada exclusivamente através de semáforos para garantir a integridade dos dados.  
+- A **saúde do inimigo** é um recurso compartilhado, pois as threads referentes a cada torre podem tentar aplicar um dano ao inimigo ao mesmo tempo, e também há um acesso de leitura da thread principal para escrever a vida na tela.
+- As **coordenadas do inimigo** são outro recurso compartilhado, pois as threads referentes a cada torre lêem o valor das coordenadas do inimigo enquanto a thread principal atualiza esses valores com o andar dele.
+- Devido a esses acessos simultâneos de leitura e escrita, são usados dois semáforos (um para a saúde, outro para as coordenadas do inimigo) para controlar o acesso às regiões críticas de código.  
 - A biblioteca **OpenGL** foi utilizada para criar a interface gráfica da simulação.
 
 ## Como Jogar
@@ -21,16 +23,16 @@ A simulação consiste em um cenário onde o jogador controla o posicionamento d
 
 ### Threads  
 - **Threads das Torres:** Cada torre possui uma thread dedicada para realizar seus ataques de forma independente.
-- **Thread Principal:** A thread principal é responsável por controlar o timer, gerenciar o movimento dos elementos na simulação e garantir o funcionamento geral do sistema.
+- **Thread Principal:** A thread principal é responsável por controlar o timer, gerenciar o movimento dos elementos no jogo e garantir o funcionamento geral do sistema.
 
 ### Semáforos  
-- **Sincronização:** Semáforos são utilizados para coordenar o acesso à saúde do inimigo, garantindo consistência ao manipular essa região crítica.  
-- **Controle de Concorrência:** Eles evitam condições de corrida, garantindo que os ataques sejam tratados de forma sincronizada e consistente.  
+- **Sincronização:** Semáforos são utilizados para coordenar o acesso à saúde do inimigo e às suas coordenadas, garantindo consistência ao manipular as regiões críticas.  
+- **Controle de Concorrência:** Eles evitam condições de corrida, garantindo que os ataques sejam tratados de forma sincronizada e consistente, assim como os cálculos de distância que são baseados na posição do inimigo.  
 
 ## Funcionalidades  
 - **Simulação Dinâmica:** A interface visual, implementada em OpenGL, exibe as torres atacando o inimigo em tempo real.
 - **Interatividade:** O jogador pode selecionar estrategicamente o posicionamento das torres para maximizar o dano.  
-- **Sincronização Segura:** O uso de semáforos protege a região crítica da saúde do inimigo, assegurando a integridade dos dados em um ambiente multithread.  
+- **Sincronização Segura:** O uso de semáforos assegura a integridade dos dados em um ambiente multithread.  
 - **Escalabilidade:** A arquitetura permite expandir a simulação para incluir mais torres ou inimigos, destacando a flexibilidade do design concorrente.  
 
 ## Requisitos de Execução  
