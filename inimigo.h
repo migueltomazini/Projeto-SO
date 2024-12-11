@@ -9,6 +9,8 @@ Victor Moreli dos Santos - 14610514
 #ifndef INIMIGO_H
 #define INIMIGO_H
 
+#define VIDA 1050
+
 // Deine o inimigo do jogo
 
 #define NUM_INIMIGOS 1

@@ -17,7 +17,7 @@ using namespace std;
 binary_semaphore mutexInimigoHP(1); // Inicializado com 1
 
 // Criação do inimigo
-Inimigo inimigo(-1.0f, 0.0f, 1050, 0.01f, 0.05f); // Movimento apenas horizontal
+Inimigo inimigo(-1.0f, 0.0f, VIDA, 0.01f, 0.05f); // Movimento apenas horizontal
 
 // Vetor de torres
 vector<Torre> torres; 

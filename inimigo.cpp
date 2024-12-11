@@ -71,6 +71,6 @@ void Inimigo::kills() {
 void Inimigo::resetar() {
     x = -1.0f;
     y = 0.0f;
-    health = 1000;
+    health = VIDA;
     alive = true;
 }
