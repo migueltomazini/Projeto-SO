@@ -15,6 +15,8 @@ Victor Moreli dos Santos - 14610514
 
     #include <GL/glut.h>
     #include <math.h>
+    #include <string>
+    using std::string;
 
     void desenha_circulo(float x, float y, float raio);
     void desenha_circunferencia(float x, float y, float raio);
@@ -22,5 +24,7 @@ Victor Moreli dos Santos - 14610514
     void desenha_linha(float x1, float y1, float x2, float y2);
     void desenha_texto_na_tela(const char* texto, float x, float y);
     void configurar_interface(int argc, char** argv);
+    void desenha_barra_de_vida(const string& texto, float xTexto, float yTexto, int vidaAtual, int vidaMaxima);
+
 
 #endif

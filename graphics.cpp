@@ -69,3 +69,37 @@ void configurar_interface(int argc, char** argv) {
     glutTimerFunc(0, timer, 0);
 }
 
+void desenha_retangulo(float x, float y, float largura, float altura, float r, float g, float b) {
+    glColor3f(r, g, b); // Define a cor
+    glBegin(GL_QUADS); // Começa o desenho de um quadrilátero
+    glVertex2f(x, y);               // Vértice inferior esquerdo
+    glVertex2f(x + largura, y);     // Vértice inferior direito
+    glVertex2f(x + largura, y + altura); // Vértice superior direito
+    glVertex2f(x, y + altura);      // Vértice superior esquerdo
+    glEnd(); // Termina o desenho
+}
+
+void desenha_barra_de_vida(const string& texto, float xTexto, float yTexto, int vidaAtual, int vidaMaxima) {
+    // Desenha o texto
+    desenha_texto_na_tela(texto.c_str(), xTexto, yTexto);
+
+    // Calcula as dimensões da barra
+    float larguraTotalBarra = 0.2f; // Largura total da barra
+    float alturaBarra = 0.05f;      // Altura da barra
+    float espacoTextoBarra = 0.1f;  // Espaço entre o texto e a barra
+    float xBarra = xTexto + espacoTextoBarra + 0.53f; // Posição da barra ao lado do texto
+    float yBarra = yTexto - 0.01f;  // Posição da barra alinhada na linha do texto
+
+    // Calcula a largura proporcional à vida atual
+    float larguraAtualBarra = larguraTotalBarra * ((float)vidaAtual / vidaMaxima);
+
+    // Define a cor com base no percentual de vida (verde → amarelo → vermelho)
+    float r = 1.0f - ((float)vidaAtual / vidaMaxima); // Mais vermelho conforme perde vida
+    float g = (float)vidaAtual / vidaMaxima;         // Mais verde conforme tem vida
+
+    // Desenha a barra de fundo (cor cinza escuro)
+    desenha_retangulo(xBarra, yBarra, larguraTotalBarra, alturaBarra, 0.2f, 0.2f, 0.2f);
+
+    // Desenha a barra de vida
+    desenha_retangulo(xBarra, yBarra, larguraAtualBarra, alturaBarra, r, g, 0.0f);
+}

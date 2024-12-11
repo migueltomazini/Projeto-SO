@@ -147,7 +147,10 @@ void draw() {
         string vidaInimigoTexto = "Vida do inimigo: " + to_string(inimigo.getHealth());
         mutexInimigoHP.release(); // Libera acesso
 
-        desenha_texto_na_tela(vidaInimigoTexto.c_str(), -0.9f, -0.9f);
+        int vidaAtual = inimigo.getHealth();
+
+        // Desenha o texto e a barra de vida
+        desenha_barra_de_vida(vidaInimigoTexto, -0.9f, -0.9f, vidaAtual, VIDA);
 
     } else if (estadoAtual == GAME_OVER) {  // Se o jogo terminou (jogador ganhou ou perdeu)
 
