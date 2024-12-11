@@ -44,9 +44,10 @@ A simulação consiste em um cenário onde o jogador controla o posicionamento d
   ```
 2. **Rodar o programa**
   ```bash
-  make
+  make all
   make run
   ```
+Comando ```bash make clean ``` também está disponível para excluir objetos e executável.
 
 ### Windows
 
